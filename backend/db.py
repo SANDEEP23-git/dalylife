@@ -247,8 +247,8 @@ try:
         _mongo_client = MongoClient(
             MONGODB_URL,
             tlsCAFile=certifi.where(),
-            serverSelectionTimeoutMS=1000,
-            connectTimeoutMS=1000
+            serverSelectionTimeoutMS=10000,
+            connectTimeoutMS=10000
         )
         _mongo_client.admin.command('ping')
         _mongo_available = True
