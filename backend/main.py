@@ -45,8 +45,10 @@ async def global_exception_handler(request: Request, exc: Exception):
 # ROUTERS
 # =========================
 
-app.include_router(auth_router,prefix="/api")
-app.include_router(tasks_router,prefix="/api")
+app.include_router(auth_router, prefix="/api")
+app.include_router(tasks_router, prefix="/api")
+app.include_router(auth_router)
+app.include_router(tasks_router)
 
 
 # =========================

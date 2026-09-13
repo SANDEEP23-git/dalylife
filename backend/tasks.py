@@ -77,6 +77,7 @@ class TaskCreate(BaseModel):
 # CREATE TASK
 # =========================================================
 
+@router.post("")
 @router.post("/")
 def create_task(
     task: TaskCreate,
@@ -133,6 +134,7 @@ def create_task(
 # GET USER TASKS
 # =========================================================
 
+@router.get("")
 @router.get("/")
 def get_tasks(
     current_user: dict = Depends(get_current_user)

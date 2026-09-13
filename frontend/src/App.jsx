@@ -1013,7 +1013,8 @@ function AuthPage({
       const endpoint = mode === "login" ? `${API_URL}/auth/login` : `${API_URL}/auth/signup`;
       const payload = mode === "login" ? { email: form.email, password: form.password } : { name: form.name, email: form.email, password: form.password };
       const response = await fetch(endpoint, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
-      const data = await response.json();
+      let data = {};
+      try { data = await response.json(); } catch { data = {}; }
       if (!response.ok) throw new Error(data.detail || "Something went wrong. Please try again.");
       if (mode === "signup") {
         // Signup only creates the account. Do NOT auto-login.
@@ -1436,7 +1437,8 @@ function Dashboard({
           method: "PATCH",
           headers: { Authorization: `Bearer ${token}` }
         });
-        const data = await response.json();
+        let data = {};
+        try { data = await response.json(); } catch { data = {}; }
         if (!response.ok) throw new Error(data.detail || "Unable to complete task");
         setGoals((current) => current.map((item) => item.id === id ? { ...item, completed: true } : item));
         const updatedUser = {
@@ -1517,7 +1519,8 @@ function Dashboard({
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!response.ok) {
-        const data = await response.json();
+        let data = {};
+        try { data = await response.json(); } catch { data = {}; }
         throw new Error(data.detail || "Unable to delete task");
       }
     } catch (error) {
@@ -1626,7 +1629,8 @@ function Dashboard({
             created_at: nowTimestamp,
           }),
         });
-        const data = await response.json();
+        let data = {};
+        try { data = await response.json(); } catch { data = {}; }
         if (!response.ok) throw new Error(data.detail || "Unable to create goal");
         const createdId = data.task?.id || data.task_id || `task-${Date.now()}`;
         setGoals((current) => [

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, EmailStr
-from passlib.context import CryptContext
+import bcrypt
 from pymongo import MongoClient
 from dotenv import load_dotenv
 from jose import jwt
@@ -14,15 +14,28 @@ load_dotenv()
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
-# Password hashing
-pwd_context = CryptContext(
-    schemes=["bcrypt"],
-    deprecated="auto"
-)
+# Password hashing & verification using native bcrypt
+def hash_password(password: str) -> str:
+    pwd_bytes = password.encode("utf-8")[:72]
+    salt = bcrypt.gensalt()
+    return bcrypt.hashpw(pwd_bytes, salt).decode("utf-8")
+
+
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    try:
+        pwd_bytes = plain_password.encode("utf-8")[:72]
+        hash_bytes = (
+            hashed_password.encode("utf-8")
+            if isinstance(hashed_password, str)
+            else hashed_password
+        )
+        return bcrypt.checkpw(pwd_bytes, hash_bytes)
+    except Exception:
+        return False
 
 from db import users_collection
 security = HTTPBearer()
-JWT_SECRET = os.getenv("JWT_SECRET")
+JWT_SECRET = os.getenv("JWT_SECRET", "evolve_rpg_super_secret_jwt_key_2026_x99")
 JWT_ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
 JWT_EXPIRE_MINUTES = int(
     os.getenv("JWT_EXPIRE_MINUTES", "60")
@@ -50,7 +63,7 @@ def signup(user: SignupRequest):
         )
 
     # Hash password
-    hashed_password = pwd_context.hash(user.password)
+    hashed_password = hash_password(user.password)
 
     # Create user
     new_user = {
@@ -96,7 +109,7 @@ def login(user: LoginRequest):
         )
 
     # Verify password
-    if not pwd_context.verify(
+    if not verify_password(
         user.password,
         existing_user["password"]
     ):
