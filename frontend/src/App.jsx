@@ -1371,7 +1371,7 @@ function Dashboard({
       if (!token) return;
       try {
         const [tasksRes, userRes] = await Promise.all([
-          fetch(`${API_URL}/tasks/`, { headers: { Authorization: `Bearer ${token}` } }),
+          fetch(`${API_URL}/tasks`, { headers: { Authorization: `Bearer ${token}` } }),
           fetch(`${API_URL}/auth/me`, { headers: { Authorization: `Bearer ${token}` } }).catch(() => null),
         ]);
 
@@ -1613,7 +1613,7 @@ function Dashboard({
 
     try {
       if (token) {
-        const response = await fetch(`${API_URL}/tasks/`, {
+        const response = await fetch(`${API_URL}/tasks`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
